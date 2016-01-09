@@ -1,8 +1,6 @@
 # KafkaRest
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/kafka_rest`. To experiment with that code, run `bin/console` for an interactive prompt.
-
-TODO: Delete this and the text above, and describe your gem
+A ruby wrapper for Kakfa Rest Proxy.
 
 ## Installation
 
@@ -22,7 +20,27 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
+#### Metadata
+
+```ruby
+# Create a client
+kafka = KafkaRest::Client.new(url: 'http://localhost:8080')
+
+# List brokers
+kafka.brokers.list
+
+# List topics
+kafka.topics
+
+# Get a single topic
+topic = kafka.topic(name)
+
+# List partitions for topic
+topic.partitions
+
+# Get a single topic partition
+topic.partition(id)
+```
 
 ## Development
 
@@ -32,10 +50,8 @@ To install this gem onto your local machine, run `bundle exec rake install`. To 
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/kafka_rest. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [Contributor Covenant](http://contributor-covenant.org) code of conduct.
-
+Bug reports and pull requests are welcome on GitHub at https://github.com/jjlangholtz/kafka_rest. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [Contributor Covenant](http://contributor-covenant.org) code of conduct.
 
 ## License
 
 The gem is available as open source under the terms of the [MIT License](http://opensource.org/licenses/MIT).
-
