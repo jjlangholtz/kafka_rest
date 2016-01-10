@@ -1,28 +1,34 @@
-require 'forwardable'
 require 'json'
-require 'set'
 require 'uri'
 
 module KafkaRest
   class Client
-    extend Forwardable
-
     DEFAULT_URL = 'http://localhost:8080'.freeze
+    BROKERS_PATH = '/brokers'.freeze
+    TOPICS_PATH = '/topics'.freeze
 
-    attr_reader :url
-
-    delegate [:topic] => :topics
+    attr_reader :url, :brokers, :topics
 
     def initialize(url: DEFAULT_URL)
       @url = url
+      @brokers = []
+      @topics = {}
     end
 
-    def brokers
-      Brokers.new(self)
+    def list_brokers
+      request(BROKERS_PATH).fetch('brokers'.freeze, []).map do |id|
+        KafkaRest::Broker.new(self, id)
+      end.tap { |b| @brokers = b }
     end
 
-    def topics
-      Topics.new(self)
+    def list_topics
+      request(TOPICS_PATH).map do |name|
+        @topics[name] = KafkaRest::Topic.new(self, name)
+      end
+    end
+
+    def [](name)
+      @topics[name] ||= KafkaRest::Topic.new(self, name)
     end
 
     def request(verb = Net::HTTP::Get, path)

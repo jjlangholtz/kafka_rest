@@ -1,0 +1,29 @@
+zookeeper:
+  image: confluent/zookeeper
+  ports:
+    - "2181:2181"
+
+kafka:
+  image: confluent/kafka
+  ports:
+    - "9092:9092"
+  links:
+    - zookeeper
+
+schema-registry:
+  image: confluent/schema-registry
+  ports:
+    - "8081:8081"
+  links:
+    - zookeeper
+    - kafka
+
+rest-proxy:
+  image: confluent/rest-proxy
+  ports:
+    - "8082:8082"
+  links:
+    - zookeeper
+    - kafka
+    - schema-registry
+  command: bash -c "curl -sSL https://s3.amazonaws.com/validic-downloads/wait-for-confluent.sh | sh && /usr/local/bin/rest-proxy-docker.sh"

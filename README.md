@@ -26,23 +26,23 @@ Or install it yourself as:
 # Create a client
 kafka = KafkaRest::Client.new(url: 'http://localhost:8080')
 
-# List brokers
-kafka.brokers.list
+# List and update brokers
+kafka.list_brokers
 
-# List topics
-kafka.topics.list
+# List and update topics
+kafka.list_topics
 
-# Get a single topic
-topic = kafka.topic(name)
+# Access single topic
+topic = kafka[name]
 
 # Get a topic's metadata
 topic.get
 
-# List partitions for topic
-topic.partitions
+# List and update partitions for topic
+topic.list_partitions
 
-# Get a single topic partition
-topic.partition(id)
+# Get a single topic partition by id
+topic[id]
 ```
 
 ## Development

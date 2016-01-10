@@ -1,20 +1,26 @@
 module KafkaRest
   class Topic
-    attr_reader :client, :name, :raw
+    attr_reader :client, :name, :raw, :partitions
 
     def initialize(client, name, raw = EMPTY_STRING)
       @client = client
       @name = name
       @raw = raw
+      @partitions = []
     end
 
     def get
       client.request(topic_path).tap { |res| @raw = res }
     end
 
-    def partitions
-      res = client.request(partitions_path)
-      res.map { |raw| Partition.new(client, self, raw['partition'], raw) }
+    def [](id)
+      partitions[id] ||= Partition.new(client, self, id)
+    end
+
+    def list_partitions
+      client.request(partitions_path).map do |raw|
+        Partition.new(client, self, raw['partition'], raw)
+      end.tap { |p| @partitions = p }
     end
 
     def to_s

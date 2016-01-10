@@ -19,6 +19,10 @@ describe KafkaRest::Topic do
     expect(subject.raw).to be_empty
   end
 
+  it 'has a collection of partitions' do
+    expect(subject.partitions).to be_empty
+  end
+
   describe '#get' do
     let(:topic_path) { '/topics/topic1'.freeze }
     before(:each) { stub_get(client.url + topic_path).with_empty_body }
@@ -42,13 +46,19 @@ describe KafkaRest::Topic do
     end
   end
 
-  describe '#partitions' do
+  describe '#[]' do
+    it 'returns the Partition for given id' do
+      expect(raw_topic[1]).to be_a KafkaRest::Partition
+    end
+  end
+
+  describe '#list_partitions' do
     let(:partition_path) { '/topics/topic1/partitions'.freeze }
 
     it 'performs a GET request to /topics/:name/partitions' do
       stub_get(client.url + partition_path).with_empty_body
 
-      subject.partitions
+      subject.list_partitions
 
       expect(a_get(client.url + partition_path)).to have_been_made
     end
@@ -59,12 +69,26 @@ describe KafkaRest::Topic do
         .with('/topics/topic1/partitions')
         .and_return(raw)
 
-      partitions = subject.partitions
+      partitions = subject.list_partitions
 
       expect(partitions).to be_an Array
       expect(partitions.first).to be_a KafkaRest::Partition
       expect(partitions.map(&:raw)).to match_array raw
       expect(partitions.map(&:to_s)).to match_array ['Partition{topic="topic1", id=1, leader=1, replicas=1}']
+    end
+
+    it 'updates partition list' do
+      allow(subject.client)
+        .to receive(:request)
+        .with('/topics/topic1/partitions')
+        .and_return(raw)
+
+      expect(subject.partitions).to be_empty
+
+      subject.list_partitions
+
+      expect(subject.partitions.size).to eq 1
+      expect(subject.partitions.first).to be_a KafkaRest::Partition
     end
   end
 

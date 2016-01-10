@@ -2,7 +2,7 @@ module KafkaRest
   class Partition
     attr_reader :client, :topic, :id, :raw
 
-    def initialize(client, topic, id, raw)
+    def initialize(client, topic, id, raw = EMPTY_STRING)
       @client = client
       @topic = topic
       @id = id
