@@ -17,28 +17,37 @@ describe KafkaRest::Topic do
   end
 
   describe '#get' do
-    it 'performs a GET request to /topics/:name' do
-      stub_request(:get, client.url + '/topics/topic1').and_return(body: '{}')
+    let(:topic_path) { '/topics/topic1'.freeze }
+    before(:each) { stub_get(client.url + topic_path).with_empty_body }
 
+    it 'performs a GET request to /topics/:name' do
       subject.get
 
-      expect(a_request(:get, client.url + '/topics/topic1')).to have_been_made
+      expect(a_get(client.url + topic_path)).to have_been_made
     end
 
     it 'returns parsed topic metadata' do
-      stub_request(:get, client.url + '/topics/topic1').and_return(body: '{}')
-
       expect(subject.get).to be_a Hash
     end
 
     it 'updates the metadata' do
-      stub_request(:get, client.url + '/topics/topic1').and_return(body: '{}')
-
       expect(subject.raw).to be_empty
 
       subject.get
 
-      expect(subject.raw).to eq '{}'
+      expect(subject.raw).to eq KafkaRest::TWO_OCTET_JSON
+    end
+  end
+
+  describe '#partitions' do
+    let(:partition_path) { '/topics/topic1/partitions'.freeze }
+
+    it 'performs a GET request to /topics/:name/partitions' do
+      stub_get(client.url + partition_path).with_empty_body
+
+      subject.partitions
+
+      expect(a_get(client.url + partition_path)).to have_been_made
     end
   end
 

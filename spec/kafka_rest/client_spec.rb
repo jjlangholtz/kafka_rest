@@ -7,10 +7,10 @@ describe KafkaRest::Client do
     expect(subject.url).to eq url
   end
 
-  it 'can be given a new url' do
-    new_url = 'http://rest-proxy-1:8080'
-    new_client = described_class.new(url: new_url)
-    expect(new_client.url).to eq new_url
+  it 'can be given a url' do
+    url = 'http://rest-proxy-1:8080'
+    new_client = described_class.new(url: url)
+    expect(new_client.url).to eq url
   end
 
   describe '#brokers' do
@@ -35,18 +35,19 @@ describe KafkaRest::Client do
   end
 
   describe '#request' do
+    let(:brokers_path) { '/brokers'.freeze }
+    before(:each) { stub_get(url + brokers_path).with_empty_body }
+
     it 'defaults request method to GET' do
-      stub_request(:get, "#{url}/brokers" ).and_return(body: '{}')
+      stub_get(url + brokers_path).with_empty_body
 
-      subject.request('/brokers')
+      subject.request(brokers_path)
 
-      expect(a_request(:get, "#{url}/brokers")).to have_been_made
+      expect(a_get(url + brokers_path)).to have_been_made
     end
 
     it 'returns a JSON string response body' do
-      stub_request(:get, "#{url}/brokers" ).and_return(body: '{}')
-
-      expect(subject.request('/brokers')).to be_a Hash
+      expect(subject.request(brokers_path)).to be_a Hash
     end
   end
 end

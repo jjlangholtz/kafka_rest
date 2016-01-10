@@ -9,4 +9,5 @@ require 'kafka_rest/version'
 
 module KafkaRest
   EMPTY_STRING = ''.freeze
+  TWO_OCTET_JSON = '{}'.freeze
 end

@@ -10,13 +10,19 @@ describe KafkaRest::Topics do
 
   describe '#list' do
     it 'makes a request through the client to /topics' do
-      expect(subject.client).to receive(:request).with('/topics').and_return(['topic1', 'topic2'])
+      expect(subject.client)
+        .to receive(:request)
+        .with('/topics')
+        .and_return(['topic1', 'topic2'])
 
       subject.list
     end
 
     it 'returns an array of topic objects' do
-      allow(subject.client).to receive(:request).with('/topics').and_return(['topic1', 'topic2'])
+      allow(subject.client)
+        .to receive(:request)
+        .with('/topics')
+        .and_return(['topic1', 'topic2'])
 
       topics = subject.list
 

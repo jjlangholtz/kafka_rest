@@ -9,7 +9,11 @@ module KafkaRest
     end
 
     def get
-      client.request(path).tap { |res| @raw = res.to_json }
+      client.request(topic_path).tap { |res| @raw = res.to_json }
+    end
+
+    def partitions
+      client.request(partitions_path)
     end
 
     def to_s
@@ -18,8 +22,12 @@ module KafkaRest
 
     private
 
-    def path
+    def topic_path
       "/topics/#{name}".freeze
+    end
+
+    def partitions_path
+      "/topics/#{name}/partitions".freeze
     end
   end
 end
