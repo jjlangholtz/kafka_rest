@@ -2,6 +2,9 @@ require 'spec_helper'
 
 describe KafkaRest::Topic do
   let(:client) { KafkaRest::Client.new }
+  let(:raw) { [{ 'partition' => 1, 'leader' => 1, 'replicas' => [{ 'broker' =>1, 'leader' => true, 'in_sync' => true }]}] }
+  let(:raw_topic) { described_class.new(client, 'topic1', raw) }
+
   subject { described_class.new(client, 'topic1') }
 
   it 'knows about the client' do
@@ -31,11 +34,11 @@ describe KafkaRest::Topic do
     end
 
     it 'updates the metadata' do
-      expect(subject.raw).to be_empty
+      expect(raw_topic.raw.size).to eq 1
 
-      subject.get
+      raw_topic.get
 
-      expect(subject.raw).to eq KafkaRest::TWO_OCTET_JSON
+      expect(raw_topic.raw).to be_empty
     end
   end
 
@@ -48,6 +51,20 @@ describe KafkaRest::Topic do
       subject.partitions
 
       expect(a_get(client.url + partition_path)).to have_been_made
+    end
+
+    it 'returns an array of partitions' do
+      allow(subject.client)
+        .to receive(:request)
+        .with('/topics/topic1/partitions')
+        .and_return(raw)
+
+      partitions = subject.partitions
+
+      expect(partitions).to be_an Array
+      expect(partitions.first).to be_a KafkaRest::Partition
+      expect(partitions.map(&:raw)).to match_array raw
+      expect(partitions.map(&:to_s)).to match_array ['Partition{topic="topic1", id=1, leader=1, replicas=1}']
     end
   end
 

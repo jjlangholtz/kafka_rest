@@ -2,18 +2,19 @@ module KafkaRest
   class Topic
     attr_reader :client, :name, :raw
 
-    def initialize(client, name)
+    def initialize(client, name, raw = EMPTY_STRING)
       @client = client
       @name = name
-      @raw = EMPTY_STRING
+      @raw = raw
     end
 
     def get
-      client.request(topic_path).tap { |res| @raw = res.to_json }
+      client.request(topic_path).tap { |res| @raw = res }
     end
 
     def partitions
-      client.request(partitions_path)
+      res = client.request(partitions_path)
+      res.map { |raw| Partition.new(client, self, raw['partition'], raw) }
     end
 
     def to_s
