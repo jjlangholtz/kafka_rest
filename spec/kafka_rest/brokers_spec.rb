@@ -11,13 +11,13 @@ describe KafkaRest::Brokers do
 
   describe '#list' do
     it 'makes a request through the client to /brokers' do
-      expect(subject.client).to receive(:request).with('/brokers').and_return('{"brokers":[1,2,3]}')
+      expect(subject.client).to receive(:request).with('/brokers').and_return('brokers' => [1, 2, 3])
 
       subject.list
     end
 
     it 'returns an array of broker objects' do
-      allow(subject.client).to receive(:request).with('/brokers').and_return('{"brokers":[1,2,3]}')
+      allow(subject.client).to receive(:request).with('/brokers').and_return('brokers' => [1, 2, 3])
 
       brokers = subject.list
 

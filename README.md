@@ -30,10 +30,13 @@ kafka = KafkaRest::Client.new(url: 'http://localhost:8080')
 kafka.brokers.list
 
 # List topics
-kafka.topics
+kafka.topics.list
 
 # Get a single topic
 topic = kafka.topic(name)
+
+# Get a topic's metadata
+topic.get
 
 # List partitions for topic
 topic.partitions
