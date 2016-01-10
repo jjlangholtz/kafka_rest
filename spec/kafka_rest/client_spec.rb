@@ -90,12 +90,21 @@ describe KafkaRest::Client do
   end
 
   describe '#request' do
-    let(:brokers_path) { '/brokers'.freeze }
     before(:each) { stub_get(url + brokers_path).with_empty_body }
 
-    it 'defaults request method to GET' do
-      stub_get(url + brokers_path).with_empty_body
+    it 'uses default User-Agent and Accept headers' do
+      subject.request(brokers_path)
 
+      req = a_get(url + brokers_path)
+        .with(headers: {
+          'User-Agent' => "kafka-rest-ruby/#{KafkaRest::VERSION}",
+          'Accept' => 'application/json'
+        })
+
+      expect(req).to have_been_made
+    end
+
+    it 'defaults request method to GET' do
       subject.request(brokers_path)
 
       expect(a_get(url + brokers_path)).to have_been_made
@@ -103,6 +112,35 @@ describe KafkaRest::Client do
 
     it 'returns a JSON string response body' do
       expect(subject.request(brokers_path)).to be_a Hash
+    end
+  end
+
+  describe '#post' do
+    before(:each) { stub_post(url + brokers_path).with_empty_body }
+
+    it 'performs a POST request' do
+      subject.post(brokers_path, {})
+
+      expect(a_post(url + brokers_path)).to have_been_made
+    end
+
+    it 'serializes post body' do
+      subject.post(brokers_path, {})
+
+      expect(a_post(url + brokers_path).with(body: '{}')).to have_been_made
+    end
+
+    it 'sets Content-Type header' do
+      req = a_post(url + brokers_path)
+        .with(headers: {
+          'User-Agent' => "kafka-rest-ruby/#{KafkaRest::VERSION}",
+          'Accept' => 'application/json',
+          'Content-Type' => 'application/json'
+        })
+
+      subject.post(brokers_path, {})
+
+      expect(req).to have_been_made
     end
   end
 end

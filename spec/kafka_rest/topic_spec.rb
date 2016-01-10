@@ -4,6 +4,7 @@ describe KafkaRest::Topic do
   let(:client) { KafkaRest::Client.new }
   let(:raw) { [{ 'partition' => 1, 'leader' => 1, 'replicas' => [{ 'broker' =>1, 'leader' => true, 'in_sync' => true }]}] }
   let(:raw_topic) { described_class.new(client, 'topic1', raw) }
+  let(:topic_path) { '/topics/topic1'.freeze }
 
   subject { described_class.new(client, 'topic1') }
 
@@ -24,7 +25,6 @@ describe KafkaRest::Topic do
   end
 
   describe '#get' do
-    let(:topic_path) { '/topics/topic1'.freeze }
     before(:each) { stub_get(client.url + topic_path).with_empty_body }
 
     it 'performs a GET request to /topics/:name' do

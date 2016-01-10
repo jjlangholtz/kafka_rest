@@ -1,5 +1,7 @@
 module KafkaRest
   class Topic
+    include Producable
+
     attr_reader :client, :name, :raw, :partitions
 
     def initialize(client, name, raw = EMPTY_STRING)
@@ -35,6 +37,10 @@ module KafkaRest
 
     def partitions_path
       "/topics/#{name}/partitions".freeze
+    end
+
+    def produce_path
+      topic_path
     end
   end
 end

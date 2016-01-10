@@ -1,5 +1,6 @@
 $LOAD_PATH.unshift File.expand_path('../../lib', __FILE__)
 require 'kafka_rest'
+require 'pry'
 require 'webmock/rspec'
 
 module WebMock
@@ -19,8 +20,16 @@ module Helpers
     stub_request(:get, path)
   end
 
+  def stub_post(path)
+    stub_request(:post, path)
+  end
+
   def a_get(path)
     a_request(:get, path)
+  end
+
+  def a_post(path)
+    a_request(:post, path)
   end
 end
 

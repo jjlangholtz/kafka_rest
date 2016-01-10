@@ -4,6 +4,7 @@ describe KafkaRest::Partition do
   let(:client) { KafkaRest::Client.new }
   let(:topic) { KafkaRest::Topic.new(client, 'topic1') }
   let(:raw_partition) { described_class.new(client, topic, 1, {'leader'=>1,'replicas'=>[1, 2]}) }
+  let(:partition_path) { '/topics/topic1/partitions/1'.freeze }
 
   subject { described_class.new(client, topic, 1, {}) }
 
@@ -25,7 +26,6 @@ describe KafkaRest::Partition do
   end
 
   describe '#get' do
-    let(:partition_path) { '/topics/topic1/partitions/1'.freeze }
     before(:each) { stub_get(client.url + partition_path).with_empty_body }
 
     it 'performs a GET request to /topics/:topic_name/partitions/:id' do

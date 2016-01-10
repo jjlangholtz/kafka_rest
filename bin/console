@@ -8,4 +8,9 @@ require "kafka_rest"
 
 # (If you use this, don't forget to add pry to your Gemfile!)
 require "pry"
+
+fail 'rest proxy is not reachable' unless system("nc -z #{ENV["DOCKER_IP"]} 8082")
+
+$kafka = KafkaRest::Client.new(url: "http://#{ENV["DOCKER_IP"]}:8082")
+
 Pry.start

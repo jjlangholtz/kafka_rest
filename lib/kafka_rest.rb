@@ -1,5 +1,7 @@
 require 'net/http'
 
+require 'kafka_rest/producable'
+
 require 'kafka_rest/broker'
 require 'kafka_rest/client'
 require 'kafka_rest/partition'
