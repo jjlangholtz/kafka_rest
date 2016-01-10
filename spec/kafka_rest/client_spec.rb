@@ -17,6 +17,10 @@ describe KafkaRest::Client do
     expect(subject.topics).to be_empty
   end
 
+  it 'has a consumers list' do
+    expect(subject.consumers).to be_empty
+  end
+
   it 'can be given a url' do
     url = 'http://rest-proxy-1:8080'
     new_client = described_class.new(url: url)
@@ -89,6 +93,20 @@ describe KafkaRest::Client do
     end
   end
 
+  describe '#consumer' do
+    it 'returns the Consumer for the given group name' do
+      expect(subject.consumer('group1')).to be_a KafkaRest::Consumer
+    end
+
+    it 'adds the group to the list if it is not there' do
+      expect(subject.consumers).to be_empty
+
+      subject.consumer('group1')
+
+      expect(subject.consumers).to have_key 'group1'
+    end
+  end
+
   describe '#request' do
     before(:each) { stub_get(url + brokers_path).with_empty_body }
 
@@ -110,7 +128,15 @@ describe KafkaRest::Client do
       expect(a_get(url + brokers_path)).to have_been_made
     end
 
-    it 'returns a JSON string response body' do
+    it 'accepts a full uri as argument' do
+      stub_get(url).with_empty_body
+
+      subject.request(url)
+
+      expect(a_get(url)).to have_been_made
+    end
+
+    it 'returns a parsed response' do
       expect(subject.request(brokers_path)).to be_a Hash
     end
   end

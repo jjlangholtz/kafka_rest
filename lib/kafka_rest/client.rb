@@ -8,12 +8,13 @@ module KafkaRest
     TOPICS_PATH = '/topics'.freeze
     CONTENT_JSON = 'application/json'.freeze
 
-    attr_reader :url, :brokers, :topics
+    attr_reader :url, :brokers, :topics, :consumers
 
     def initialize(url: DEFAULT_URL)
       @url = url
       @brokers = []
       @topics = {}
+      @consumers = {}
     end
 
     def list_brokers
@@ -32,8 +33,14 @@ module KafkaRest
       @topics[name] ||= KafkaRest::Topic.new(self, name)
     end
 
-    def request(path, verb: Net::HTTP::Get, body: EMPTY_STRING)
-      uri = URI.parse(url + path)
+    def consumer(group)
+      @consumers[group] ||= Consumer.new(self, group)
+    end
+
+    def request(path, verb: Net::HTTP::Get, body: nil)
+      uri = URI.parse(path)
+      uri = URI.parse(url + path) unless uri.absolute?
+
       Net::HTTP.start(uri.host, uri.port) do |http|
         req = verb.new(uri)
         req['User-Agent'.freeze] = user_agent
@@ -49,7 +56,7 @@ module KafkaRest
       end
     end
 
-    def post(path, body)
+    def post(path, body = nil)
       request(path, verb: Net::HTTP::Post, body: body)
     end
 

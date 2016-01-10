@@ -51,7 +51,16 @@ topic[id]
 # Produce a message to a topic
 topic.produce(message)
 
-# Produce a message to a partition
+# Messages can be produced in a number of formats
+topic.produce('msg1')
+topic.produce('msg1', 'msg2', 'msg3')
+topic.produce(['msg1', 'msg2', 'msg3'])
+topic.produce(key: 'key1', value: 'msg1')
+topic.produce(partition: 0, value: 'msg1')
+topic.produce({ key: 'key1', value: 'msg1'}, { partition: 0, value: 'msg2' })
+topic.produce([{ key: 'key1', value: 'msg1'}, { partition: 0, value: 'msg2' }])
+
+# Messages can also be produced from a partition
 partition.produce(message)
 ```
 
