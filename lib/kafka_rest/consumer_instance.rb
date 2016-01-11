@@ -19,7 +19,9 @@ module KafkaRest
     end
 
     def start!
-      @streams.each(&:read)
+      threads = []
+      @streams.each { |stream| threads << Thread.new { stream.read } }
+      threads.each(&:join)
     end
 
     def shutdown!

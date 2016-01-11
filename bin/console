@@ -20,4 +20,14 @@ $k = KafkaRest::Client.new(url: "http://#{docker}:8082")
 end
 puts "You can use the already created 'KafkaRest::Client' with \e[32m$k\e[0m"
 
+if ARGV[0] == 'consumer'
+  $k.consumer('fb').join do |i|
+    i.subscribe('foo') do |s|
+      s.on(:data) do |msg|
+        puts msg
+      end
+    end
+  end
+end
+
 Pry.start

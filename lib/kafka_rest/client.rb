@@ -38,7 +38,7 @@ module KafkaRest
       @consumers[group] ||= Consumer.new(self, group)
     end
 
-    def request(path, verb: Net::HTTP::Get, body: nil, &block)
+    def request(path, verb: Net::HTTP::Get, body: nil, schema: nil, &block)
       uri = URI.parse(path)
       uri = URI.parse(url + path) unless uri.absolute?
 
@@ -48,7 +48,7 @@ module KafkaRest
         req['Accept'.freeze] = CONTENT_JSON
 
         unless verb.is_a? Net::HTTP::Post
-          req['Content-Type'.freeze] = CONTENT_JSON
+          req['Content-Type'.freeze] = schema ? schema.content_type : CONTENT_JSON
           req.body = body.to_json
         end
 
@@ -59,8 +59,8 @@ module KafkaRest
       end
     end
 
-    def post(path, body = nil)
-      request(path, verb: Net::HTTP::Post, body: body)
+    def post(path, body = nil, schema = nil)
+      request(path, verb: Net::HTTP::Post, body: body, schema: schema)
     end
 
     private

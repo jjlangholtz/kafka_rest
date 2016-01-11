@@ -11,6 +11,7 @@ require 'kafka_rest/consumer'
 require 'kafka_rest/consumer_instance'
 require 'kafka_rest/consumer_stream'
 require 'kafka_rest/partition'
+require 'kafka_rest/schema'
 require 'kafka_rest/topic'
 
 require 'kafka_rest/version'

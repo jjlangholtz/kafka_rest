@@ -178,5 +178,19 @@ describe KafkaRest::Client do
 
       expect(req).to have_been_made
     end
+
+    it 'accepts a schema as an argument and uses it for the content type header' do
+      schema = double(content_type: 'avro')
+      subject.post(brokers_path, {}, schema)
+
+      req = a_post(url + brokers_path)
+        .with(headers: {
+          'User-Agent' => "kafka-rest-ruby/#{KafkaRest::VERSION}",
+          'Accept' => 'application/json',
+          'Content-Type' => 'avro'
+        })
+
+      expect(req).to have_been_made
+    end
   end
 end
