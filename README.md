@@ -70,16 +70,35 @@ partition.produce(message)
 # Create a consumer group
 consumer = kafka.consumer('group1')
 
-# Create an instance in the group
+# Create an instance in the group, blocks and consumes in a loop after yielding
 consumer.join do |instance|
-
   # Subscribe to a stream for topic
   instance.subscribe('topic1') do |stream|
-    stream.on(:read) do |messages|
-      # Your event-driven code
+  stream.on(:data) do |messages|
+    # Your event-driven code
+  end
+
+  stream.on(:error) do |error|
+    # Error handling
+    if some_unrecoverable_exception?
+      stream.shutdown! do
+        # Optionally any cleanup code before stream is killed
+      end
     end
-    stream.on(:error) do |error|
-      # Error handling
+  end
+end
+
+# The same consumer instance can be used to subscribe to multiple topics
+consumer.join do |instance|
+  instance.subscribe('foo') do |stream|
+    stream.on(:data) do |messages|
+      # Callbacks for foo topic only
+    end
+  end
+
+  instance.subscribe('bar') do |stream|
+    stream.on(:data) do |messages|
+      # Callbacks for bar topic only
     end
   end
 end

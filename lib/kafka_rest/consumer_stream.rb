@@ -10,6 +10,7 @@ module KafkaRest
       @client = instance.client
       @instance = instance
       @topic = topic
+      @active = true
     end
 
     def read
@@ -21,10 +22,25 @@ module KafkaRest
           if res.code.to_i > 400
             emit(:error, messages)
           else
-            emit(:read, messages.map(&decode))
+            emit(:data, messages.map(&decode))
           end
         end
+
+        unless active?
+          emit(:end)
+          @cleanup.call if @cleanup.is_a? Proc
+          break # out of read loop
+        end
       end
+    end
+
+    def active?
+      !!@active
+    end
+
+    def shutdown!(&block)
+      @active = false
+      @cleanup = block if block_given?
     end
 
     private

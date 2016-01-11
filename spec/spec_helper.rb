@@ -11,25 +11,19 @@ module WebMock
   end
 
   class RequestStub
-    include  Extensions
+    include Extensions
   end
 end
 
 module Helpers
-  def stub_get(path)
-    stub_request(:get, path)
-  end
+  %i(get post delete).each do |verb|
+    define_method("stub_#{verb}") do |path|
+      stub_request(verb, path)
+    end
 
-  def stub_post(path)
-    stub_request(:post, path)
-  end
-
-  def a_get(path)
-    a_request(:get, path)
-  end
-
-  def a_post(path)
-    a_request(:post, path)
+    define_method("a_#{verb}") do |path|
+      a_request(verb, path)
+    end
   end
 end
 

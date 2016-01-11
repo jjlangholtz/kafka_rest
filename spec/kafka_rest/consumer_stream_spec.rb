@@ -19,6 +19,10 @@ describe KafkaRest::ConsumerStream do
     expect(subject.topic).to eq 'topic1'
   end
 
+  it 'is active by default' do
+    expect(subject).to be_active
+  end
+
   describe '#read' do
     before(:each) do
       stub_get(instance.uri + topic_path).with_empty_body
@@ -34,7 +38,7 @@ describe KafkaRest::ConsumerStream do
     it 'emits a read event with messages' do
       stub_get(instance.uri + topic_path).and_return(body: '[{"key":"a2V5","value":"Y29uZmx1ZW50"}]')
 
-      expect(subject).to receive(:emit).with(:read, [{ 'key' => 'key', 'value' => 'confluent' }])
+      expect(subject).to receive(:emit).with(:data, [{ 'key' => 'key', 'value' => 'confluent' }])
 
       subject.read
     end
@@ -51,6 +55,46 @@ describe KafkaRest::ConsumerStream do
       expect(subject).to_not receive(:emit)
 
       subject.read
+    end
+
+    it 'emits an end event when inactive' do
+      stub_get(instance.uri + topic_path).and_return(body: '[{"key":"a2V5","value":"Y29uZmx1ZW50"}]')
+
+      subject.instance_variable_set(:@active, false)
+      expect(subject).to receive(:emit).with(:data, [{ 'key' => 'key', 'value' => 'confluent' }])
+      expect(subject).to receive(:emit).with(:end)
+
+      subject.read
+    end
+
+    it 'invokes cleanup block when inactive' do
+      probe = ->(){}
+      stub_get(instance.uri + topic_path).and_return(body: '[{"key":"a2V5","value":"Y29uZmx1ZW50"}]')
+
+      subject.instance_variable_set(:@active, false)
+      subject.instance_variable_set(:@cleanup, probe)
+      expect(probe).to receive(:call)
+
+      subject.read
+    end
+  end
+
+  describe '#shutdown!' do
+    it 'marks the stream as inactive' do
+      expect(subject).to be_active
+
+      subject.shutdown!
+
+      expect(subject).to_not be_active
+    end
+
+    it 'registers a final callback to be invoked on shutdown' do
+      expect(subject.instance_variable_get(:@cleanup)).to be_nil
+
+      probe = ->(){}
+      subject.shutdown!(&probe)
+
+      expect(subject.instance_variable_get(:@cleanup)).to be_a Proc
     end
   end
 end

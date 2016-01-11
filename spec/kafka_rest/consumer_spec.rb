@@ -42,5 +42,12 @@ describe KafkaRest::Consumer do
     it 'yields the new instance' do
       expect { |b| subject.join(&b) }.to yield_with_args(KafkaRest::ConsumerInstance)
     end
+
+    it 'starts the created instances streams after yielding' do
+      allow(KafkaRest::ConsumerInstance).to receive(:new).and_return(instance = double)
+      expect(instance).to receive(:start!)
+
+      subject.join
+    end
   end
 end

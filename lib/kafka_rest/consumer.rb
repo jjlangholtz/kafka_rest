@@ -8,11 +8,12 @@ module KafkaRest
       @instances = {}
     end
 
-    def join(&block)
+    def join
       res = client.post(consumers_path)
       instance = ConsumerInstance.new(self, res)
       @instances[res['instance_id']] = instance
       yield instance if block_given?
+      instance.start!
     end
 
     private
