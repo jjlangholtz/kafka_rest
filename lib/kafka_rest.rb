@@ -1,8 +1,8 @@
 require 'net/http'
 
 # Modules
-require 'kafka_rest/producable'
 require 'kafka_rest/event_emitter'
+require 'kafka_rest/producable'
 
 # Classes
 require 'kafka_rest/broker'

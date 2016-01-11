@@ -6,6 +6,7 @@ module KafkaRest
 
     private
 
+    # 'msg' -> { value: 'msg' }
     def wrap
       ->(m) { m.is_a?(Hash) ? m : Hash[:value, m] }
     end

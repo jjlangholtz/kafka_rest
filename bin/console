@@ -2,15 +2,22 @@
 
 require "bundler/setup"
 require "kafka_rest"
-
-# You can add fixtures and/or initialization code here to make experimenting
-# with your gem easier. You can also use a different console, if you like.
-
-# (If you use this, don't forget to add pry to your Gemfile!)
 require "pry"
 
-fail 'rest proxy is not reachable' unless system("nc -z #{ENV["DOCKER_IP"]} 8082")
+docker = `docker-machine active | xargs docker-machine ip`.chomp
+fail 'docker-machine is not active, did you bin/setup?' unless $?.success?
+fail 'rest proxy is not reachable, did you bin/setup?' unless system("nc -z #{docker} 8082")
 
-$kafka = KafkaRest::Client.new(url: "http://#{ENV["DOCKER_IP"]}:8082")
+$k = KafkaRest::Client.new(url: "http://#{docker}:8082")
+
+@is_code = false
+`cat README.md`.each_line do |line|
+  if line.start_with?('```')
+    @is_code = !@is_code
+    next
+  end
+  puts line if @is_code
+end
+puts "You can use the already created 'KafkaRest::Client' with \e[32m$k\e[0m"
 
 Pry.start

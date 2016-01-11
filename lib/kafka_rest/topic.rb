@@ -15,9 +15,10 @@ module KafkaRest
       client.request(topic_path).tap { |res| @raw = res }
     end
 
-    def [](id)
+    def partition(id)
       partitions[id] ||= Partition.new(client, self, id)
     end
+    alias_method :[], :partition
 
     def list_partitions
       client.request(partitions_path).map do |raw|

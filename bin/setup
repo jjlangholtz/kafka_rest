@@ -6,3 +6,9 @@ set -vx
 bundle install
 
 # Do any other automated setup that you need to do here
+
+for cmd in  docker docker-machine docker-compose; do
+  if test ! $(which $cmd); then echo "install docker at https://docs.docker.com/" && exit 1; fi
+done
+
+$(docker-compose up -d)

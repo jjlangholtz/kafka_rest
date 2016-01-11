@@ -29,9 +29,10 @@ module KafkaRest
       end
     end
 
-    def [](name)
+    def topic(name)
       @topics[name] ||= KafkaRest::Topic.new(self, name)
     end
+    alias_method :[], :topic
 
     def consumer(group, &block)
       @consumers[group] ||= Consumer.new(self, group)

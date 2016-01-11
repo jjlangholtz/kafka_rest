@@ -93,6 +93,12 @@ describe KafkaRest::Client do
     end
   end
 
+  describe '#topic' do
+    it 'returns the Topic for given name' do
+      expect(subject.topic('topic1')).to be_a KafkaRest::Topic
+    end
+  end
+
   describe '#consumer' do
     it 'returns the Consumer for the given group name' do
       expect(subject.consumer('group1')).to be_a KafkaRest::Consumer

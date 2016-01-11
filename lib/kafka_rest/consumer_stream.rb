@@ -33,6 +33,9 @@ module KafkaRest
       "#{instance.uri}/topics/#{topic}".freeze
     end
 
+    # { 'key' => 'aGVsbG8' } -> { 'key' => 'hello' }
+    # { 'value' => 'd29ybGQ' } -> { 'value' => 'world' }
+    # { 'key' => 'aGVsbG8', value' => 'd29ybGQ' } -> { 'key' => 'hello', 'value' => world' }
     def decode
       ->(h) { %w(key value).each { |k| next unless h[k]; h[k] = Base64.decode64(h[k]) }; h }
     end

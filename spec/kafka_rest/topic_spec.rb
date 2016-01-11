@@ -52,6 +52,12 @@ describe KafkaRest::Topic do
     end
   end
 
+  describe '#partition' do
+    it 'returns the Partition for given id' do
+      expect(raw_topic.partition(1)).to be_a KafkaRest::Partition
+    end
+  end
+
   describe '#list_partitions' do
     let(:partition_path) { '/topics/topic1/partitions'.freeze }
 

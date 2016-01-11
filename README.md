@@ -33,7 +33,7 @@ kafka.list_brokers
 kafka.list_topics
 
 # Access single topic
-topic = kafka[name]
+topic = kafka.topic(name) # or kafka[name]
 
 # Get a topic's metadata
 topic.get
@@ -42,10 +42,10 @@ topic.get
 topic.list_partitions
 
 # Get a single topic partition by id
-topic[id]
+partition = topic.partition(id) # or topic[id]
 ```
 
-#### Producer
+#### Producing
 
 ```ruby
 # Produce a message to a topic
@@ -64,11 +64,16 @@ topic.produce([{ key: 'key1', value: 'msg1'}, { partition: 0, value: 'msg2' }])
 partition.produce(message)
 ```
 
-#### Consumer
+#### Consuming
 
 ```ruby
+# Create a consumer group
 consumer = kafka.consumer('group1')
+
+# Create an instance in the group
 consumer.join do |instance|
+
+  # Subscribe to a stream for topic
   instance.subscribe('topic1') do |stream|
     stream.on(:read) do |messages|
       # Your event-driven code
