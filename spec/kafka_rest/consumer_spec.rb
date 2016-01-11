@@ -38,5 +38,9 @@ describe KafkaRest::Consumer do
       expect(instance).to be_a KafkaRest::ConsumerInstance
       expect(instance.raw).to eq JSON.parse(body)
     end
+
+    it 'yields the new instance' do
+      expect { |b| subject.join(&b) }.to yield_with_args(KafkaRest::ConsumerInstance)
+    end
   end
 end

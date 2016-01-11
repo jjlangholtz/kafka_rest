@@ -64,6 +64,22 @@ topic.produce([{ key: 'key1', value: 'msg1'}, { partition: 0, value: 'msg2' }])
 partition.produce(message)
 ```
 
+#### Consumer
+
+```ruby
+consumer = kafka.consumer('group1')
+consumer.join do |instance|
+  instance.subscribe('topic1') do |stream|
+    stream.on(:read) do |messages|
+      # Your event-driven code
+    end
+    stream.on(:error) do |error|
+      # Error handling
+    end
+  end
+end
+```
+
 ## Development
 
 After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.

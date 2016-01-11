@@ -1,5 +1,9 @@
+require 'base64'
+
 module KafkaRest
   class ConsumerStream
+    include EventEmitter
+
     attr_reader :client, :instance, :topic
 
     def initialize(instance, topic)
@@ -10,7 +14,16 @@ module KafkaRest
 
     def read
       loop do
-        client.request(consume_path)
+        client.request(consume_path) do |res|
+          messages = JSON.parse(res.body.to_s)
+          break if messages.empty?
+
+          if res.code.to_i > 400
+            emit(:error, messages)
+          else
+            emit(:read, messages.map(&decode))
+          end
+        end
       end
     end
 
@@ -18,6 +31,10 @@ module KafkaRest
 
     def consume_path
       "#{instance.uri}/topics/#{topic}".freeze
+    end
+
+    def decode
+      ->(h) { %w(key value).each { |k| next unless h[k]; h[k] = Base64.decode64(h[k]) }; h }
     end
   end
 end

@@ -139,6 +139,10 @@ describe KafkaRest::Client do
     it 'returns a parsed response' do
       expect(subject.request(brokers_path)).to be_a Hash
     end
+
+    it 'yields the response' do
+      expect { |b| subject.request(brokers_path, &b) }.to yield_with_args
+    end
   end
 
   describe '#post' do

@@ -31,8 +31,24 @@ describe KafkaRest::ConsumerStream do
       expect(a_get(instance.uri + topic_path)).to have_been_made
     end
 
-    it 'reads from the stream in a loop' do
-      expect(subject).to receive(:loop).and_yield
+    it 'emits a read event with messages' do
+      stub_get(instance.uri + topic_path).and_return(body: '[{"key":"a2V5","value":"Y29uZmx1ZW50"}]')
+
+      expect(subject).to receive(:emit).with(:read, [{ 'key' => 'key', 'value' => 'confluent' }])
+
+      subject.read
+    end
+
+    it 'emits an error event with error status codes' do
+      stub_get(instance.uri + topic_path).and_return(body: '{"error_code":422}', status: 422)
+
+      expect(subject).to receive(:emit).with(:error, { 'error_code' => 422 })
+
+      subject.read
+    end
+
+    it 'does not emit a read event without messages' do
+      expect(subject).to_not receive(:emit)
 
       subject.read
     end

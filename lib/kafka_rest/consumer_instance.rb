@@ -10,8 +10,10 @@ module KafkaRest
       @uri = raw.fetch('base_uri') { fail 'consumer response did not contain base_uri' }
     end
 
-    def subscribe(topic)
-      ConsumerStream.new(self, topic)
+    def subscribe(topic, &block)
+      stream = ConsumerStream.new(self, topic)
+      yield stream if block_given?
+      stream.read
     end
   end
 end

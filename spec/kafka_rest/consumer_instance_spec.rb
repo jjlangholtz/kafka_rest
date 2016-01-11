@@ -4,6 +4,7 @@ describe KafkaRest::ConsumerInstance do
   let(:client) { KafkaRest::Client.new }
   let(:consumer) { KafkaRest::Consumer.new(client, 'group1') }
   let(:uri) { 'http://proxy.com/consumers/group1/instances/my_consumer' }
+  let(:topic_path) { '/topics/topic1' }
 
   subject { described_class.new(consumer, 'instance_id' => 'my_consumer', 'base_uri' => uri) }
 
@@ -36,8 +37,18 @@ describe KafkaRest::ConsumerInstance do
   end
 
   describe '#subscribe' do
-    it 'returns a new ConsumerStream for topic name' do
-      expect(subject.subscribe('topic1')).to be_a KafkaRest::ConsumerStream
+    it 'yields the consumer stream' do
+      allow(KafkaRest::ConsumerStream).to receive(:new).and_return(stream = double)
+      allow(stream).to receive(:read)
+
+      expect { |b| subject.subscribe('topic1', &b) }.to yield_with_args
+    end
+
+    it 'starts reading from the new stream' do
+      allow(KafkaRest::ConsumerStream).to receive(:new).and_return(stream = double)
+      expect(stream).to receive(:read)
+
+      subject.subscribe('topic1')
     end
   end
 end

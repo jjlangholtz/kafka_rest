@@ -8,8 +8,11 @@ module KafkaRest
       @instances = {}
     end
 
-    def join
-      client.post(consumers_path).tap { |res| @instances[res['instance_id']] = ConsumerInstance.new(self, res) }
+    def join(&block)
+      res = client.post(consumers_path)
+      instance = ConsumerInstance.new(self, res)
+      @instances[res['instance_id']] = instance
+      yield instance if block_given?
     end
 
     private

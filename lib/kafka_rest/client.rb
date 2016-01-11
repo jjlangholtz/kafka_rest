@@ -33,11 +33,11 @@ module KafkaRest
       @topics[name] ||= KafkaRest::Topic.new(self, name)
     end
 
-    def consumer(group)
+    def consumer(group, &block)
       @consumers[group] ||= Consumer.new(self, group)
     end
 
-    def request(path, verb: Net::HTTP::Get, body: nil)
+    def request(path, verb: Net::HTTP::Get, body: nil, &block)
       uri = URI.parse(path)
       uri = URI.parse(url + path) unless uri.absolute?
 
@@ -51,8 +51,10 @@ module KafkaRest
           req.body = body.to_json
         end
 
-        res = http.request(req).body.to_s # ensure body is not nil
-        JSON.parse(res)
+        res = http.request(req)
+        yield res if block_given?
+
+        JSON.parse(res.body.to_s)
       end
     end
 
