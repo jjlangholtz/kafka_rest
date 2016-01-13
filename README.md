@@ -62,6 +62,9 @@ topic.produce([{ key: 'key1', value: 'msg1'}, { partition: 0, value: 'msg2' }])
 
 # Messages can also be produced from a partition
 partition.produce(message)
+
+# You can even produce messages asynchronously
+partition.produce_async(message)
 ```
 
 #### Consuming
@@ -88,18 +91,13 @@ consumer.join do |instance|
   end
 end
 
-# The same consumer instance can be used to subscribe to multiple topics
+# The same consumer instance *CANNOT* be used to subscribe to multiple topics
 consumer.join do |instance|
   instance.subscribe('foo') do |stream|
-    stream.on(:data) do |messages|
-      # Callbacks for foo topic only
-    end
+    stream.on(:data) { }
   end
-
   instance.subscribe('bar') do |stream|
-    stream.on(:data) do |messages|
-      # Callbacks for bar topic only
-    end
+    stream.on(:data) { }
   end
 end
 ```
