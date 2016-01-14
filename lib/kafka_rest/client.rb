@@ -29,8 +29,8 @@ module KafkaRest
       end
     end
 
-    def topic(name)
-      @topics[name] ||= KafkaRest::Topic.new(self, name)
+    def topic(name, schema = nil)
+      @topics[name] ||= KafkaRest::Topic.new(self, name, EMPTY_STRING, schema)
     end
     alias_method :[], :topic
 

@@ -7,8 +7,17 @@ module KafkaRest
 
     def initialize(definition)
       @id = nil
-      @serialized = definition.to_json
+      @definition = definition
+      @mutex = Mutex.new
       @content_type = AVRO_CONTENT
+    end
+
+    def update_id(id)
+      @mutex.synchronize { @id = id }
+    end
+
+    def serialized
+      @definition
     end
   end
 end

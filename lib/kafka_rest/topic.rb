@@ -2,11 +2,12 @@ require 'monitor'
 
 module KafkaRest
   class Topic
-    attr_reader :client, :name, :raw, :partitions
+    attr_reader :client, :name, :raw, :partitions, :schema
 
-    def initialize(client, name, raw = EMPTY_STRING)
+    def initialize(client, name, raw = EMPTY_STRING, schema = nil)
       @client = client
       @name = name
+      @schema = schema
       @raw = raw
       @partitions = []
 
@@ -35,7 +36,21 @@ module KafkaRest
     end
 
     def produce(*messages)
-      client.post(topic_path, { records: format(messages) }, nil, true)
+      payload = { records: format(messages) }
+
+      if schema && schema.id
+        payload[:value_schema_id] = schema.id
+      else
+        payload[:value_schema] = schema.serialized
+      end
+
+      res = client.post(topic_path, payload, schema, true)
+
+      if schema && schema_id = JSON.parse(res.body.to_s)['value_schema_id']
+        schema.update_id(schema_id)
+      end
+
+      res
     end
 
     def produce_async(*messages)
