@@ -59,8 +59,12 @@ module KafkaRest
       end
     end
 
-    def post(path, body = nil, schema = nil)
-      request(path, verb: Net::HTTP::Post, body: body, schema: schema)
+    def post(path, body = nil, schema = nil, raw_response = false)
+      raw = nil
+      res = request(path, verb: Net::HTTP::Post, body: body, schema: schema) do |resp|
+        raw = resp
+      end
+      raw_response ? raw : res
     end
 
     private
