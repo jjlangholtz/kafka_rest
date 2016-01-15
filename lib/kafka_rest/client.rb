@@ -50,6 +50,7 @@ module KafkaRest
         unless verb.is_a? Net::HTTP::Post
           req['Content-Type'.freeze] = schema ? schema.content_type : CONTENT_JSON
           req.body = body.to_json
+          KafkaRest.logger.info { "Post body: #{req.body}" }
         end
 
         res = http.request(req)

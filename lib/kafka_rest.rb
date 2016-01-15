@@ -2,6 +2,7 @@ require 'net/http'
 
 # Modules
 require 'kafka_rest/event_emitter'
+require 'kafka_rest/logging'
 require 'kafka_rest/producable'
 
 # Classes
@@ -20,4 +21,10 @@ module KafkaRest
   EMPTY_STRING = ''.freeze
   TWO_OCTET_JSON = '{}'.freeze
   RIGHT_BRACE = '}'.freeze
+
+  class << self
+    def logger
+      KafkaRest::Logging.logger
+    end
+  end
 end

@@ -100,16 +100,16 @@ module KafkaRest
                     res = produce(messages)
                     break unless res.code.to_i >= 400
                   rescue StandardError
-                    puts e.message
-                    puts e.backtrace.join('\n')
+                    KafkaRest.logger.info { e.message }
+                    KafkaRest.logger.info { e.backtrace.join('\n') }
                   end
                 end
               end
             end
           end
         rescue ::Exception => e
-          puts e.message
-          puts e.backtrace.join('\n')
+          KafkaRest.logger.info { e.message }
+          KafkaRest.logger.info { e.backtrace.join('\n') }
         end
       end
     end
