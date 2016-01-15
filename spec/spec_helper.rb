@@ -3,6 +3,8 @@ require 'kafka_rest'
 require 'pry'
 require 'webmock/rspec'
 
+KafkaRest.logger.level = Logger::WARN
+
 module WebMock
   module Extensions
     def with_empty_body

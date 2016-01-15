@@ -1,5 +1,7 @@
 require 'net/http'
 
+require 'kafka_rest/core_ext'
+
 # Modules
 require 'kafka_rest/event_emitter'
 require 'kafka_rest/logging'
