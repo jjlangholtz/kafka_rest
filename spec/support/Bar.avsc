@@ -1,0 +1,7 @@
+{
+  "name": "Bar",
+  "fields": [
+    { "name": "name", "type": "string" },
+    { "name": "foo", "type": "Foo" }
+  ]
+}
