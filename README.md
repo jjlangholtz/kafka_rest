@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/jjlangholtz/kafka_rest.svg?branch=master)](https://travis-ci.org/jjlangholtz/kafka_rest)
+
 # KafkaRest
 
 A ruby wrapper for Kakfa Rest Proxy.
@@ -65,6 +67,12 @@ partition.produce(message)
 
 # You can even produce messages asynchronously
 partition.produce_async(message)
+
+# To produce Avro encoded messages, parse a schema definition and pass to topic
+schema = KafkaRest::Schema.parse('Foo.avsc')
+topic = KafkaRest.topic('Foo', schema)
+
+topic.produce(value: message)
 ```
 
 #### Consuming
