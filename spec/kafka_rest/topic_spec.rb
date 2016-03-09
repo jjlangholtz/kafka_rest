@@ -98,6 +98,35 @@ describe KafkaRest::Topic do
     end
   end
 
+  describe '#produce' do
+    let(:produce_path) { '/topics/topic1'.freeze }
+
+    context 'without a schema' do
+      let(:topic) { described_class.new(client, 'topic1') }
+
+      it 'performs a POST request to /topics/:name/partitions/:id' do
+        stub_post(client.url + produce_path).with_empty_body
+
+        topic.produce
+
+        expect(a_post(client.url + produce_path)).to have_been_made
+      end
+    end
+
+    context 'with a schema' do
+      let(:schema) { instance_double('schema', id: 1, content_type: 'application/json') }
+      let(:topic) { described_class.new(client, 'topic1', '', schema) }
+
+      it 'performs a POST request to /topics/:name/partitions/:id' do
+        stub_post(client.url + produce_path).with_empty_body
+
+        topic.produce
+
+        expect(a_post(client.url + produce_path)).to have_been_made
+      end
+    end
+  end
+
   describe '#to_s' do
     it 'converts the topic to a formatted string' do
       expect(subject.to_s).to eq 'Topic{name=topic1}'

@@ -38,10 +38,12 @@ module KafkaRest
     def produce(*messages)
       payload = { records: format(messages) }
 
-      if schema && schema.id
-        payload[:value_schema_id] = schema.id
-      else
-        payload[:value_schema] = schema.serialized
+      if schema
+        if schema.id
+          payload[:value_schema_id] = schema.id
+        else
+          payload[:value_schema] = schema.serialized
+        end
       end
 
       res = client.post(topic_path, payload, schema, true)
